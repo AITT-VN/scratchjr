@@ -20,7 +20,10 @@
     "test:e2e": "vitest run tests/e2e",
     "a11y:structure": "node scripts/a11y-structure.mjs",
     "test:e2e-accessibility": "vitest run tests/e2e/accessibility.e2e.test.js",
-    "a11y:ci": "npm run a11y:structure && npm run test:e2e-accessibility"
+    "a11y:ci": "npm run a11y:structure && npm run test:e2e-accessibility",
+    "deploy:s3": "aws s3 sync ./editions/free/src s3://sjr.ohstem.vn-337643813927-ap-southeast-1-an --delete --profile ohstem",
+    "deploy:invalidate": "aws cloudfront create-invalidation --distribution-id E3MIBY6PEVUZSO --paths \"/*\" --profile ohstem",
+    "deploy:aws": "npm run build && node -e \"const fs=require('fs');fs.cpSync('src/build/bundles','editions/free/src',{recursive:true})\" && npm run deploy:s3 && npm run deploy:invalidate"
   },
   "author": "Massachusetts Institute of Technology",
   "license": "BSD-3-Clause",
