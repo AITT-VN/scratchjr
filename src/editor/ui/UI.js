@@ -516,7 +516,7 @@ export default class UI {
         var flip = newButton('flipme', sl, {
             ariaLabel: Localization.localize('ALERT_BACK')
         });
-        UI.createConnectionButtons(sl);
+        // UI.createConnectionButtons(sl); // Hidden: hardware device connection not used
 
         flip.setAttribute('id', 'flip');
         flip.onclick = function (evt) {
@@ -1709,7 +1709,7 @@ export default class UI {
         ndiv.setAttribute('role', 'group');
         ndiv.setAttribute('aria-label', UI.getGuideControlLabel('INTERFACE_GUIDE_PAGES'));
 
-        UI.addMartyModeButton(rp);
+        // UI.addMartyModeButton(rp); // Hidden: MartyMode toggle not used
     }
 
     static addMartyModeButton(rightPanel) {
@@ -1736,6 +1736,7 @@ export default class UI {
     }
     /*MartyMode*/
     static renderCorrectMartyModeIcon() {
+        if (!gn('martyMode')) return; // Hidden: MartyMode button not present
         var toggleDiv = gn('martyMode').getElementsByClassName('martyModeToggle')[0];
         var spriteIcon = gn('martyMode').getElementsByClassName('spriteModeIcon')[0];
         var martyIcon = gn('martyMode').getElementsByClassName('martyModeIcon')[0];

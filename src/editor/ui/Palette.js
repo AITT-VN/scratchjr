@@ -77,7 +77,7 @@ export default class Palette {
 
     static recreateCategories() {
         Palette.recreateLeftCategory();
-        Palette.recreateRightCategory();
+        // Palette.recreateRightCategory(); // Hidden: hardware device categories not used
 
         Palette.selectCategory(0);
     }
@@ -93,7 +93,7 @@ export default class Palette {
         // Create the new Right Category selectors
         Palette.createCategorySelectors(Palette.parent);
 
-        Palette.recreateRightCategory();
+        // Palette.recreateRightCategory(); // Hidden: hardware device categories not used
     }
 
     static recreateRightCategory() {
@@ -105,7 +105,7 @@ export default class Palette {
         }
 
         // Create the new Right Category selectors
-        Palette.createCategorySelectorsRight(Palette.parent);
+        // Palette.createCategorySelectorsRight(Palette.parent); // Hidden: hardware device categories not used
     }
 
     static setup(parent) {
@@ -115,7 +115,7 @@ export default class Palette {
         Palette.blockdx *= scaleMultiplier; // XXX
         betweenblocks = 90 * blockscale;
         Palette.createCategorySelectors(parent);
-        Palette.createCategorySelectorsRight(parent);
+        // Palette.createCategorySelectorsRight(parent); // Hidden: hardware device categories not used
         var div = newHTML('div', 'palette', parent);
         div.setAttribute('id', 'palette');
         div.setAttribute('role', 'group');
@@ -317,12 +317,14 @@ export default class Palette {
 
     static hide() {
         gn('blockspalette').querySelector('#selectors').style.display = 'none';
-        gn('blockspalette').querySelector('#selectorsright').style.display = 'none';
+        var sr = gn('blockspalette').querySelector('#selectorsright');
+        if (sr) sr.style.display = 'none';
     }
 
     static show() {
         gn('blockspalette').querySelector('#selectors').style.display = 'inline-block';
-        gn('blockspalette').querySelector('#selectorsright').style.display = 'inline-block';
+        var sr = gn('blockspalette').querySelector('#selectorsright');
+        if (sr) sr.style.display = 'inline-block';
     }
 
 
@@ -620,9 +622,10 @@ export default class Palette {
     static selectCategory(n) {
         var div = gn('selectors');
         // if the number is greater than the number of categories (in the left categories div), then it is in the right categories div
-        const isRightCategories = n >= div.childNodes.length - 1;
+        const rightDiv = gn('selectorsright');
+        const isRightCategories = rightDiv && n >= div.childNodes.length - 1;
         n = isRightCategories ? n - (div.childNodes.length - 1) : n;
-        div = isRightCategories ? gn('selectorsright') : gn('selectors');
+        div = isRightCategories ? rightDiv : gn('selectors');
         currentCategorySide = isRightCategories ? 'right' : 'left';
         // set the icons for text or sprite
         numcat = n;
@@ -635,12 +638,14 @@ export default class Palette {
             setPressedState(sel, selIndex == n);
         }
         // set to hidden the selectors for the other side categories
-        const otherSideDiv = isRightCategories ? gn('selectors') : gn('selectorsright');
-        for (var i = 1; i < otherSideDiv.childElementCount; i++) {
-            var sel = otherSideDiv.childNodes[i];
-            sel.childNodes[0].style.visibility = 'visible';
-            sel.childNodes[1].style.visibility = 'hidden';
-            setPressedState(sel, false);
+        const otherSideDiv = isRightCategories ? gn('selectors') : rightDiv;
+        if (otherSideDiv) {
+            for (var i = 1; i < otherSideDiv.childElementCount; i++) {
+                var sel = otherSideDiv.childNodes[i];
+                sel.childNodes[0].style.visibility = 'visible';
+                sel.childNodes[1].style.visibility = 'hidden';
+                setPressedState(sel, false);
+            }
         }
 
         var pal = gn('palette');
