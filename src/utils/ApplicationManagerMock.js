@@ -14,8 +14,7 @@ class ApplicationManagerMock {
     }
 
     getTheCurrentlySelectedDeviceOrFirstOfItsKind(type) {
-        const raft = new RaftMock();
-        return raft;
+        return null;
     }
     
     connectGenericCog(callback) {
