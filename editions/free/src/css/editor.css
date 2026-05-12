@@ -548,11 +548,6 @@ z-index: 5;
     border-radius: 12px;
 }
 
-#scriptscontainer .keyboard-script-strip[aria-pressed="true"]:not(:focus-visible) {
-    box-shadow: 0 0 0 3px rgba(15, 95, 255, 0.35);
-    border-radius: 12px;
-}
-
 .watermark {
     position: absolute;
     top: ${css_vh(2.60)};
