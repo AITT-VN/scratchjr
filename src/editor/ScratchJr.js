@@ -307,6 +307,15 @@ export default class ScratchJr {
             window.onpointerdown = ScratchJr.unfocus;
             window.onpointerup = undefined;
           }
+        window.addEventListener('pagehide', ScratchJr.flushOnExit);
+        window.addEventListener('beforeunload', ScratchJr.flushOnExit);
+    }
+
+    static flushOnExit() {
+        if (!changed || !autoSaveEnabled || onHold || Project.saving || UI.infoBoxOpen) {
+            return;
+        }
+        ScratchJr.saveProject(null, null);
     }
 
     static unfocus(evt) {
