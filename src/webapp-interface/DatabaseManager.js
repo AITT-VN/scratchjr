@@ -357,6 +357,8 @@ export default class DatabaseManager {
 
       const lastRowId = result[0].values[0][0];
 
+      this.save();
+
       return lastRowId;
     } catch (e) {
       console.log("stmt failed", jsonStrOrJsonObj, e);
