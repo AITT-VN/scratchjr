@@ -15,6 +15,7 @@ export default class Menu {
     }
 
     static openDropDown (b, fcn) {
+        Menu.removeStaleMenus();
         var size = 50;
         var color = b.owner.blocktype == 'setspeed' ? 'orange' : 'yellow';
         if (b.owner.spec[9]) {
@@ -48,10 +49,25 @@ export default class Menu {
         });
         mu.setAttribute('class', 'menustyle ' + color);
         mu.active = b;
+        mu.onpointerdown = function (evt) {
+            if (evt.target === mu) {
+                Menu.closeMyOpenMenu();
+            }
+        };
         for (var i = 0; i < list.length; i++) {
             Menu.addImageToDropDown(mu, list[i], b, fcn);
         }
         openMenu = mu;
+    }
+
+    static removeStaleMenus () {
+        var stale = document.querySelectorAll('.menustyle');
+        for (var i = 0; i < stale.length; i++) {
+            if (stale[i].parentNode) {
+                stale[i].parentNode.removeChild(stale[i]);
+            }
+        }
+        openMenu = undefined;
     }
 
     static addImageToDropDown (mu, c, block, fcn) {

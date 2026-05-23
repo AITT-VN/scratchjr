@@ -309,6 +309,11 @@ export default class ScratchJr {
           }
         window.addEventListener('pagehide', ScratchJr.flushOnExit);
         window.addEventListener('beforeunload', ScratchJr.flushOnExit);
+        window.addEventListener('keydown', function (evt) {
+            if (evt.key === 'Escape' && Menu.openMenu) {
+                Menu.closeMyOpenMenu();
+            }
+        });
     }
 
     static flushOnExit() {
