@@ -1,10 +1,23 @@
 var WebpackNotifierPlugin = require("webpack-notifier");
 const path = require("path");
+const webpack = require("webpack");
+const { execSync } = require("child_process");
 // const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 const mode = process.argv.find(arg => arg.startsWith('--mode=')).split('=')[1];
 const isProduction = mode === 'production';
 const sqlJsPath = path.dirname(require.resolve("sql.js/package.json"));
+
+function safeGit(cmd, fallback) {
+  try {
+    return execSync(cmd, { stdio: ["ignore", "pipe", "ignore"] }).toString().trim();
+  } catch (e) {
+    return fallback;
+  }
+}
+
+const BUILD_COMMIT = safeGit("git rev-parse --short HEAD", "unknown");
+const BUILD_DATE = new Date().toISOString();
 
 const babelLoaderOptions = {
   presets: [
@@ -78,6 +91,10 @@ module.exports = {
   },
   plugins: [
     // new BundleAnalyzerPlugin(),
+    new webpack.DefinePlugin({
+      __BUILD_COMMIT__: JSON.stringify(BUILD_COMMIT),
+      __BUILD_DATE__: JSON.stringify(BUILD_DATE),
+    }),
     new WebpackNotifierPlugin({
       title: "ScratchJr",
       alwaysNotify: true,

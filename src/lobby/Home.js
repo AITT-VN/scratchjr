@@ -32,6 +32,27 @@ export default class Home {
       frame.onpointerup = Home.handleTouchEnd;
     }
     Home.displayYourProjects();
+    Home.renderBuildInfo();
+  }
+
+  static renderBuildInfo() {
+    if (gn("buildinfo")) return;
+    var commit = typeof __BUILD_COMMIT__ !== "undefined" ? __BUILD_COMMIT__ : "dev";
+    var iso = typeof __BUILD_DATE__ !== "undefined" ? __BUILD_DATE__ : "";
+    var when = "";
+    if (iso) {
+      var d = new Date(iso);
+      if (!isNaN(d.getTime())) {
+        var pad = function (n) { return String(n).padStart(2, "0"); };
+        when = d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate())
+          + " " + pad(d.getHours()) + ":" + pad(d.getMinutes());
+      }
+    }
+    var info = document.createElement("div");
+    info.id = "buildinfo";
+    info.textContent = "build " + commit + (when ? " · " + when : "");
+    info.style.cssText = "position:fixed;bottom:4px;right:6px;font:10px/1 monospace;color:#888;opacity:0.6;pointer-events:none;z-index:9999;user-select:text;";
+    document.body.appendChild(info);
   }
 
   ////////////////////////////
