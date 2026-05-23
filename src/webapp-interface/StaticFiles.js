@@ -16,6 +16,9 @@ export default class StaticFiles {
       throw new Error("File path cannot be null or empty");
     try {
       const response = await fetch(filePath);
+      if (!response.ok) {
+        return null;
+      }
       const text = await response.clone().text();
 
       if (text.includes("<!DOCTYPE html") || text.includes("<html")) {
@@ -37,6 +40,9 @@ export default class StaticFiles {
     }
     try {
       const response = await fetch(filePath);
+      if (!response.ok) {
+        return false;
+      }
       const text = await response.clone().text();
 
       if (text.includes("<!DOCTYPE html") || text.includes("<html")) {
