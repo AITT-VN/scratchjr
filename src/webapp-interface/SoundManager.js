@@ -31,12 +31,21 @@ export default class SoundManager {
       // if not pull from the scratch document folder.
       console.log("...trying to look in the PROJECTFILE table", audioName);
 
-      // this is already stored as a string, we do not need to convert it
       let projectDBFile = await dataStoreInstance.readProjectFileAsBase64EncodedString(
         audioName
       );
-      console.log("...WARNING: unable to find: ", audioName);
-      return projectDBFile;
+      if (!projectDBFile) {
+        console.log("...WARNING: unable to find: ", audioName);
+        return null;
+      }
+      if (projectDBFile.startsWith("data:")) {
+        return projectDBFile;
+      }
+      const ext = path.extname(audioName).toLowerCase();
+      if (ext === ".mp3") return `data:audio/mp3;base64,${projectDBFile}`;
+      if (ext === ".wav") return `data:audio/wav;base64,${projectDBFile}`;
+      if (ext === ".webm") return `data:audio/wav;base64,${projectDBFile}`;
+      return `data:audio/wav;base64,${projectDBFile}`;
     }
     const data = await StaticFiles.readFile(filePath);
     if (!data) {
@@ -69,16 +78,28 @@ export default class SoundManager {
   }
 
   loadSoundFromDataURI(name, dataUri) {
-    if (dataUri && name) {
-      let audio = new window.Audio(dataUri);
-      audio.volume = 0.8; // don't oversaturate the speakers
-      audio.onended = function () {
-        // we need to tell ScratchJR the sound is done
-        // so that it will progress to the next block.
-        OS.soundDone(name); // eslint-disable-line no-undef
-      };
-      this.currentAudio[name] = audio;
+    if (!dataUri || !name) {
+      console.log("loadSoundFromDataURI skipped", name, !!dataUri);
+      return;
     }
+    let src = dataUri;
+    if (!src.startsWith("data:")) {
+      const ext = (name.split(".").pop() || "").toLowerCase();
+      const mime = ext === "mp3" ? "audio/mp3" : "audio/wav";
+      src = `data:${mime};base64,${src}`;
+    }
+    console.log("loadSoundFromDataURI", name, "srcLen", src.length, "prefix", src.substring(0, 32));
+    let audio = new window.Audio(src);
+    audio.volume = 0.8; // don't oversaturate the speakers
+    audio.onerror = function () {
+      console.log("Audio load error for", name, audio.error && audio.error.code, audio.error && audio.error.message);
+    };
+    audio.onended = function () {
+      // we need to tell ScratchJR the sound is done
+      // so that it will progress to the next block.
+      OS.soundDone(name); // eslint-disable-line no-undef
+    };
+    this.currentAudio[name] = audio;
   }
 
 
